@@ -1,17 +1,95 @@
-// Update this page (the content is just a fallback if you fail and example)
-// Use chakra-ui
-import { Container, Text, VStack } from "@chakra-ui/react";
-
-// Example of using react-icons
-// import { FaRocket } from "react-icons/fa";
-// <IconButton aria-label="Add" icon={<FaRocket />} size="lg" />; // IconButton would also have to be imported from chakra
+import { Container, Text, VStack, Box, Heading } from "@chakra-ui/react";
+import { useEffect, useState } from "react";
+import { FaGlobe, FaClock } from "react-icons/fa";
+import * as THREE from "three";
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
 
 const Index = () => {
+  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTimeLeft(calculateTimeLeft());
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    initGlobe();
+  }, []);
+
+  function calculateTimeLeft() {
+    const difference = +new Date("2024-07-27") - +new Date();
+    let timeLeft = {};
+
+    if (difference > 0) {
+      timeLeft = {
+        days: Math.floor(difference / (1000 * 60 * 60 * 24)),
+        hours: Math.floor((difference / (1000 * 60 * 60)) % 24),
+        minutes: Math.floor((difference / 1000 / 60) % 60),
+        seconds: Math.floor((difference / 1000) % 60),
+      };
+    }
+
+    return timeLeft;
+  }
+
+  function initGlobe() {
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ alpha: true });
+
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.getElementById("globe-container").appendChild(renderer.domElement);
+
+    const geometry = new THREE.SphereGeometry(5, 32, 32);
+    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+    const globe = new THREE.Mesh(geometry, material);
+
+    scene.add(globe);
+
+    const controls = new OrbitControls(camera, renderer.domElement);
+    controls.enableZoom = false;
+
+    camera.position.z = 10;
+
+    const animate = function () {
+      requestAnimationFrame(animate);
+
+      globe.rotation.y += 0.01;
+
+      controls.update();
+      renderer.render(scene, camera);
+    };
+
+    animate();
+  }
+
+  const timerComponents = [];
+
+  Object.keys(timeLeft).forEach((interval) => {
+    if (!timeLeft[interval]) {
+      return;
+    }
+
+    timerComponents.push(
+      <span key={interval}>
+        {timeLeft[interval]} {interval}{" "}
+      </span>
+    );
+  });
+
   return (
-    <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center">
+    <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" bgGradient="linear(to-r, gray.300, gray.600)">
       <VStack spacing={4}>
-        <Text fontSize="2xl">Your Blank Canvas</Text>
-        <Text>Chat with the agent to start making edits.</Text>
+        <Heading as="h1" size="2xl" color="white" textTransform="lowercase">
+          teleses.ai, coming soon
+        </Heading>
+        <Box id="globe-container" width="100%" height="400px" />
+        <Text fontSize="xl" color="white">
+          <FaClock /> countdown to demo day: {timerComponents.length ? timerComponents : <span>Time's up!</span>}
+        </Text>
       </VStack>
     </Container>
   );
