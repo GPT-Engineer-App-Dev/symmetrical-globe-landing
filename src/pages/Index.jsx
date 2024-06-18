@@ -36,34 +36,46 @@ const Index = () => {
   }
 
   function initGlobe() {
-    const scene = new THREE.Scene();
-    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const renderer = new THREE.WebGLRenderer({ alpha: true });
+    try {
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ alpha: true });
 
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    document.getElementById("globe-container").appendChild(renderer.domElement);
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      const globeContainer = document.getElementById("globe-container");
 
-    const geometry = new THREE.SphereGeometry(5, 32, 32);
-    const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
-    const globe = new THREE.Mesh(geometry, material);
+      if (!globeContainer) {
+        console.error("Globe container not found");
+        return;
+      }
 
-    scene.add(globe);
+      globeContainer.innerHTML = ""; // Clear any existing content
+      globeContainer.appendChild(renderer.domElement);
 
-    const controls = new OrbitControls(camera, renderer.domElement);
-    controls.enableZoom = false;
+      const geometry = new THREE.SphereGeometry(5, 32, 32);
+      const material = new THREE.MeshBasicMaterial({ color: 0xffffff, wireframe: true });
+      const globe = new THREE.Mesh(geometry, material);
 
-    camera.position.z = 10;
+      scene.add(globe);
 
-    const animate = function () {
-      requestAnimationFrame(animate);
+      const controls = new OrbitControls(camera, renderer.domElement);
+      controls.enableZoom = false;
 
-      globe.rotation.y += 0.01;
+      camera.position.z = 10;
 
-      controls.update();
-      renderer.render(scene, camera);
-    };
+      const animate = function () {
+        requestAnimationFrame(animate);
 
-    animate();
+        globe.rotation.y += 0.01;
+
+        controls.update();
+        renderer.render(scene, camera);
+      };
+
+      animate();
+    } catch (error) {
+      console.error("Error initializing globe:", error);
+    }
   }
 
   const timerComponents = [];
