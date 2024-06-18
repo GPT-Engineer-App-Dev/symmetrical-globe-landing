@@ -1,8 +1,10 @@
-import { Container, Text, VStack, Box, Heading } from "@chakra-ui/react";
+import { Container, Text, VStack, Box, Heading, Flex, Spacer, Button, HStack } from "@chakra-ui/react";
 import { useEffect, useState } from "react";
 import { FaGlobe, FaClock } from "react-icons/fa";
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls";
+import axios from "axios";
+import _ from "lodash";
 
 const Index = () => {
   const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
@@ -94,7 +96,16 @@ const Index = () => {
 
   return (
     <Container centerContent maxW="container.md" height="100vh" display="flex" flexDirection="column" justifyContent="center" alignItems="center" bgGradient="linear(to-r, gray.300, gray.600)">
-      <VStack spacing={4}>
+      <VStack spacing={4} width="100%">
+        <Flex width="100%" p={4} bg="gray.700" color="white" alignItems="center">
+          <Heading as="h1" size="lg">Teleses.ai</Heading>
+          <Spacer />
+          <HStack spacing={4}>
+            <Button variant="ghost" colorScheme="whiteAlpha">Home</Button>
+            <Button variant="ghost" colorScheme="whiteAlpha">About</Button>
+            <Button variant="ghost" colorScheme="whiteAlpha">Contact</Button>
+          </HStack>
+        </Flex>
         <Heading as="h1" size="2xl" color="white" textTransform="lowercase">
           teleses.ai, coming soon
         </Heading>
